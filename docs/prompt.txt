@@ -1,0 +1,9 @@
+"data.keys()" -> "dict_keys(['info', 'licenses', 'images', 'annotations', 'categories'])
+" + "len(data["images"])" -> "len(data["images"])" + "data["images"][0]" -> "{'license': 3,
+ 'file_name': '000000532482.jpg',
+ 'coco_url': 'http://images.cocodataset.org/train2017/000000532482.jpg',
+ 'height': 375,
+ 'width': 500,
+ 'date_captured': '2013-11-16 22:15:43',
+ 'flickr_url': 'http://farm1.staticflickr.com/1/127502674_d12d191e86_z.jpg',
+ 'id': 532482}"

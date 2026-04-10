@@ -1,0 +1,14 @@
+# ------------------------------------------------------
+# Dockerfile.fuseki - Apache Jena Fuseki standalone
+# ------------------------------------------------------
+FROM stain/jena-fuseki:latest
+
+USER root
+
+# Optional: set default admin password and dataset
+ENV ADMIN_PASSWORD=admin
+EXPOSE 3030
+
+# Start Fuseki with an in-memory dataset /ds
+#CMD ["/jena-fuseki/fuseki-server", "mem /ds", "--update"]
+CMD ["sh", "-c", "./fuseki-server --mem /ds"]

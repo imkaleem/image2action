@@ -1,0 +1,22 @@
+# Traffic-light pipeline: dataset build, color classifier training, inference
+
+build_datasets:
+  schema_path: "ontology/schema.ttl"
+  bdd_ttl_path: "out/bdd_sample_1000.ttl"
+  output_root: "data/datasets"
+  split_ratio: 0.2
+  seed: 42
+
+train_color:
+  data_root: "data/datasets/tl_color"
+  model_dir: "artifacts/models"
+  figures_dir: "artifacts/figures"
+  batch_size: 32
+  epochs: 5
+  learning_rate: 1.0e-4
+  img_size: 224
+  seed: 42
+
+inference:
+  yolo_model_path: "artifacts/runs/detect/train/weights/best.pt"
+  color_model_path: "artifacts/models/tl_color_best.pt"

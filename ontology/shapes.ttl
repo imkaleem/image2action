@@ -1,0 +1,216 @@
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix cv: <http://vision.semkg.org/onto/v0.1/> .
+@prefix schema: <http://schema.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+############################################################
+# Dataset Shape
+############################################################
+
+cv:DatasetShape a sh:NodeShape ;
+    sh:targetClass cv:Dataset ;
+
+    sh:property [
+        sh:path schema:name ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+
+    sh:property [
+        sh:path schema:hasPart ;
+        sh:class cv:Image ;
+        sh:minCount 1 ;
+        sh:description "Dataset must contain at least one image" ;
+    ] .
+
+############################################################
+# Image Shape
+############################################################
+
+cv:ImageShape a sh:NodeShape ;
+    sh:targetClass cv:Image ;
+
+    sh:property [
+        sh:path cv:fromDataset ;
+        sh:class cv:Dataset ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+
+    sh:property [
+        sh:path cv:hasAnnotation ;
+        sh:class cv:ObjectDetectionAnnotation ;
+        sh:minCount 0 ;
+    ] ;
+
+    sh:property [
+        sh:path cv:containsObject ;
+        sh:class cv:Object ;
+        sh:minCount 0 ;
+    ] ;
+
+    sh:property [
+        sh:path schema:name ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+    ] ;
+
+    sh:property [
+        sh:path cv:sceneTrafficLightColor ;
+        sh:class cv:Color ;
+        sh:maxCount 1 ;
+    ] ;
+
+    ############################################################
+    # Image File Path Constraint
+    ############################################################
+
+    sh:property [
+        sh:path cv:filePath ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:pattern "^data/(bdd_100k_val|coco_traffic_val)/images/.*\\.(jpg|png)$" ;
+        sh:description "Each image must have exactly one relative file path." ;
+    ] ;
+
+    sh:property [
+        sh:path cv:derivedFromTrafficLight ;
+        sh:class cv:TrafficLight ;
+        sh:maxCount 1 ;
+    ] .
+
+
+############################################################
+# Object Detection Annotation Shape
+############################################################
+
+cv:ObjectDetectionAnnotationShape a sh:NodeShape ;
+    sh:targetClass cv:ObjectDetectionAnnotation ;
+
+    # annotation must belong to exactly one image
+    sh:property [
+        sh:path [ sh:inversePath cv:hasAnnotation ] ;
+        sh:class cv:Image ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+
+    # annotation may describe exactly one object
+    sh:property [
+        sh:path cv:annotatesObject ;
+        sh:class cv:Object ;
+        sh:maxCount 1 ;
+    ] ;
+
+    sh:property [
+        sh:path cv:hasBox ;
+        sh:class cv:Box ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+
+    sh:property [
+        sh:path cv:category ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:severity sh:Warning ;
+    ] ;
+
+    sh:property [
+        sh:path cv:trafficLightColor ;
+        sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:severity sh:Warning ;
+    ] .
+
+############################################################
+# Box Shape
+############################################################
+
+cv:BoxShape a sh:NodeShape ;
+    sh:targetClass cv:Box ;
+
+    sh:property [
+        sh:path cv:x ;
+        sh:datatype xsd:float ;
+        sh:minInclusive 0 ;
+        sh:maxCount 1 ;
+    ] ;
+
+    sh:property [
+        sh:path cv:y ;
+        sh:datatype xsd:float ;
+        sh:minInclusive 0 ;
+        sh:maxCount 1 ;
+    ] ;
+
+    sh:property [
+        sh:path cv:width ;
+        sh:datatype xsd:float ;
+        sh:minExclusive 0 ;
+        sh:maxCount 1 ;
+    ] ;
+
+    sh:property [
+        sh:path cv:height ;
+        sh:datatype xsd:float ;
+        sh:minExclusive 0 ;
+        sh:maxCount 1 ;
+    ] .
+
+############################################################
+# Traffic Light Shape
+############################################################
+
+cv:TrafficLightShape a sh:NodeShape ;
+    sh:targetClass cv:TrafficLight ;
+
+    sh:property [
+        sh:path cv:hasColor ;
+        sh:class cv:Color ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] .
+
+############################################################
+# Vehicle Shape
+############################################################
+
+cv:EgoVehicleShape a sh:NodeShape ;
+    sh:targetClass cv:EgoVehicle ;
+
+    sh:property [
+        sh:path cv:action ;
+        sh:class cv:Action ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] .
+
+############################################################
+# Controlled Vocabulary: Color
+############################################################
+
+cv:ColorShape a sh:NodeShape ;
+    sh:targetClass cv:Color ;
+    sh:in (
+        cv:RedColor
+        cv:GreenColor
+        cv:YellowColor
+        cv:NAColor
+    ) .
+
+############################################################
+# Controlled Vocabulary: Action
+############################################################
+
+cv:ActionShape a sh:NodeShape ;
+    sh:targetClass cv:Action ;
+    sh:in (
+        cv:StopAction
+        cv:GoAction
+        cv:SlowAction
+        cv:UnknownAction
+    ) .

@@ -1,0 +1,253 @@
+@prefix cv: <http://vision.semkg.org/onto/v0.1/> .
+@prefix schema: <http://schema.org/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+############################################################
+# Ontology Header
+############################################################
+
+cv:VisionOntology a owl:Ontology ;
+    rdfs:label "Vision Semantic KG Ontology" ;
+    rdfs:comment "Ontology for visual perception, traffic scenes, and driving-related semantics. Prediction is external; OWL provides abstraction, inference, and consistency checking." .
+
+############################################################
+# Core Classes
+############################################################
+
+cv:Dataset a owl:Class ;
+    rdfs:label "Dataset" .
+
+cv:Image a owl:Class ;
+    rdfs:label "Image" .
+
+cv:Object a owl:Class ;
+    rdfs:label "Visual Object" .
+
+cv:ObjectDetectionAnnotation a owl:Class ;
+    rdfs:label "Object Detection Annotation" .
+
+cv:Box a owl:Class ;
+    rdfs:label "Bounding Box" .
+
+############################################################
+# Road User & Object Taxonomy
+############################################################
+
+cv:RoadUser a owl:Class ;
+    rdfs:subClassOf cv:Object ;
+    rdfs:label "Road User" .
+
+cv:Vehicle a owl:Class ;
+    rdfs:subClassOf cv:RoadUser ;
+    rdfs:label "Vehicle" .
+
+cv:EgoVehicle a owl:Class ;
+    rdfs:subClassOf cv:Vehicle ;
+    rdfs:label "Ego Vehicle" ;
+    rdfs:comment "The autonomous vehicle observing the scene." .
+
+cv:Human a owl:Class ;
+    rdfs:subClassOf cv:RoadUser ;
+    rdfs:label "Human" .
+
+# Vehicles
+cv:Car a owl:Class ; rdfs:subClassOf cv:Vehicle .
+cv:Truck a owl:Class ; rdfs:subClassOf cv:Vehicle .
+cv:Bus a owl:Class ; rdfs:subClassOf cv:Vehicle .
+cv:Train a owl:Class ; rdfs:subClassOf cv:Vehicle .
+cv:Motorcycle a owl:Class ; rdfs:subClassOf cv:Vehicle .
+cv:Bicycle a owl:Class ; rdfs:subClassOf cv:Vehicle .
+
+# Humans
+cv:Person a owl:Class ; rdfs:subClassOf cv:Human .
+cv:Rider a owl:Class ; rdfs:subClassOf cv:Person .
+
+############################################################
+# Vehicle Semantics
+############################################################
+
+cv:TwoWheeler a owl:Class ; rdfs:subClassOf cv:Vehicle .
+cv:FourWheeler a owl:Class ; rdfs:subClassOf cv:Vehicle .
+
+cv:Motorcycle rdfs:subClassOf cv:TwoWheeler .
+cv:Bicycle rdfs:subClassOf cv:TwoWheeler .
+cv:Car rdfs:subClassOf cv:FourWheeler .
+cv:Truck rdfs:subClassOf cv:FourWheeler .
+cv:Bus rdfs:subClassOf cv:FourWheeler .
+
+############################################################
+# Traffic Light & Color System
+############################################################
+
+cv:TrafficLight a owl:Class ;
+    rdfs:subClassOf cv:Object ;
+    rdfs:label "Traffic Light" .
+
+cv:Color a owl:Class ;
+    rdfs:label "Color" .
+
+cv:RedColor a owl:Class ; rdfs:subClassOf cv:Color .
+cv:GreenColor a owl:Class ; rdfs:subClassOf cv:Color .
+cv:YellowColor a owl:Class ; rdfs:subClassOf cv:Color .
+cv:NAColor a owl:Class ; rdfs:subClassOf cv:Color .
+
+############################################################
+# Semantic Traffic Signal Abstraction
+############################################################
+
+cv:TrafficSignal a owl:Class ;
+    rdfs:label "Traffic Signal Meaning" ;
+    owl:disjointUnionOf (
+        cv:StopSignal
+        cv:GoSignal
+        cv:CautionSignal
+    ) .
+
+cv:StopSignal a owl:Class ; rdfs:subClassOf cv:TrafficSignal .
+cv:GoSignal a owl:Class ; rdfs:subClassOf cv:TrafficSignal .
+cv:CautionSignal a owl:Class ; rdfs:subClassOf cv:TrafficSignal .
+
+cv:RedColor rdfs:subClassOf cv:StopSignal .
+cv:GreenColor rdfs:subClassOf cv:GoSignal .
+cv:YellowColor rdfs:subClassOf cv:CautionSignal .
+
+############################################################
+# Scene-Level Abstractions
+############################################################
+
+cv:SceneTrafficLight a owl:Class ;
+    rdfs:label "Scene-Level Traffic Light Abstraction" ;
+    rdfs:comment "Represents the dominant traffic light relevant to the ego vehicle." .
+
+############################################################
+# Actions (Ego Vehicle)
+############################################################
+
+cv:Action a owl:Class ;
+    rdfs:label "Driving Action" .
+
+cv:StopAction a owl:Class ; rdfs:subClassOf cv:Action .
+cv:SlowAction a owl:Class ; rdfs:subClassOf cv:Action .
+cv:GoAction a owl:Class ; rdfs:subClassOf cv:Action .
+cv:UnknownAction a owl:Class ; rdfs:subClassOf cv:Action .
+
+cv:StopAction owl:disjointWith cv:GoAction, cv:SlowAction .
+cv:GoAction owl:disjointWith cv:SlowAction .
+
+############################################################
+# Object Properties
+############################################################
+
+cv:fromDataset a owl:ObjectProperty ;
+    rdfs:domain cv:Image ;
+    rdfs:range cv:Dataset .
+
+cv:hasAnnotation a owl:ObjectProperty ;
+    rdfs:domain cv:Image ;
+    rdfs:range cv:ObjectDetectionAnnotation .
+
+cv:containsObject a owl:ObjectProperty ;
+    rdfs:domain cv:Image ;
+    rdfs:range cv:Object .
+
+cv:annotatesObject a owl:ObjectProperty ;
+    rdfs:domain cv:ObjectDetectionAnnotation ;
+    rdfs:range cv:Object ;
+    owl:inverseOf cv:describedByAnnotation .
+
+cv:describedByAnnotation a owl:ObjectProperty ;
+    rdfs:domain cv:Object ;
+    rdfs:range cv:ObjectDetectionAnnotation .
+
+cv:hasBox a owl:ObjectProperty ;
+    rdfs:domain cv:ObjectDetectionAnnotation ;
+    rdfs:range cv:Box .
+
+cv:hasColor a owl:ObjectProperty ;
+    rdfs:domain cv:TrafficLight ;
+    rdfs:range cv:Color .
+
+cv:hasSceneTrafficLight a owl:ObjectProperty ;
+    rdfs:domain cv:Image ;
+    rdfs:range cv:SceneTrafficLight .
+
+cv:sceneTrafficLightColor a owl:ObjectProperty ;
+    rdfs:domain cv:Image ;
+    rdfs:range cv:Color .
+
+cv:derivedFromTrafficLight a owl:ObjectProperty ;
+    rdfs:domain cv:Image ;
+    rdfs:range cv:TrafficLight .
+
+cv:action a owl:ObjectProperty ;
+    rdfs:domain cv:EgoVehicle ;
+    rdfs:range cv:Action .
+
+cv:hasCategoryClass a owl:ObjectProperty ;
+    rdfs:domain cv:ObjectDetectionAnnotation ;
+    rdfs:range owl:Class ;
+    rdfs:label "semantic category class" .
+
+############################################################
+# Data Properties (Raw / Legacy)
+############################################################
+
+cv:category a owl:DatatypeProperty ;
+    rdfs:domain cv:ObjectDetectionAnnotation ;
+    rdfs:range xsd:string .
+
+cv:trafficLightColor a owl:DatatypeProperty ;
+    rdfs:domain cv:ObjectDetectionAnnotation ;
+    rdfs:range xsd:string .
+
+cv:occluded a owl:DatatypeProperty ;
+    rdfs:domain cv:ObjectDetectionAnnotation ;
+    rdfs:range xsd:boolean .
+
+cv:truncated a owl:DatatypeProperty ;
+    rdfs:domain cv:ObjectDetectionAnnotation ;
+    rdfs:range xsd:boolean .
+
+cv:x a owl:DatatypeProperty ; rdfs:domain cv:Box ; rdfs:range xsd:float .
+cv:y a owl:DatatypeProperty ; rdfs:domain cv:Box ; rdfs:range xsd:float .
+cv:width a owl:DatatypeProperty ; rdfs:domain cv:Box ; rdfs:range xsd:float .
+cv:height a owl:DatatypeProperty ; rdfs:domain cv:Box ; rdfs:range xsd:float .
+
+############################################################
+# Inference Metadata
+############################################################
+
+cv:inferenceMethod a owl:DatatypeProperty ;
+    rdfs:domain cv:Image ;
+    rdfs:range xsd:string .
+
+cv:inferenceConfidence a owl:DatatypeProperty ;
+    rdfs:domain cv:Image ;
+    rdfs:range xsd:float .
+
+############################################################
+# Scene Metadata
+############################################################
+
+cv:inWeather a owl:DatatypeProperty ;
+    rdfs:domain cv:Image ;
+    rdfs:range xsd:string .
+
+cv:inLight a owl:DatatypeProperty ;
+    rdfs:domain cv:Image ;
+    rdfs:range xsd:string .
+
+cv:scene a owl:DatatypeProperty ;
+    rdfs:domain cv:Image ;
+    rdfs:range xsd:string .
+
+############################################################
+# Disjointness & Consistency Constraints
+############################################################
+
+cv:Vehicle owl:disjointWith cv:TrafficLight .
+cv:Human owl:disjointWith cv:Vehicle .
+cv:ObjectDetectionAnnotation owl:disjointWith cv:Object .

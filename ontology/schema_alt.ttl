@@ -1,0 +1,222 @@
+@prefix cv: <http://vision.semkg.org/onto/v0.1/> .
+@prefix schema: <http://schema.org/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+############################
+# Ontology
+############################
+
+cv:VisionOntology a owl:Ontology ;
+    rdfs:label "Vision Semantic KG Ontology" ;
+    rdfs:comment "Ontology for visual scene understanding, object detection, and driving-related semantics." .
+
+############################
+# Core Classes
+############################
+
+cv:Dataset a owl:Class ;
+    rdfs:label "Dataset" .
+
+cv:Image a owl:Class ;
+    rdfs:label "Image" .
+
+cv:Object a owl:Class ;
+    rdfs:label "Visual Object" .
+
+cv:Vehicle a owl:Class ;
+    rdfs:subClassOf cv:Object ;
+    rdfs:label "Vehicle" .
+
+cv:TrafficLight a owl:Class ;
+    rdfs:subClassOf cv:Object ;
+    rdfs:label "Traffic Light" .
+
+cv:ObjectDetectionAnnotation a owl:Class ;
+    rdfs:label "Object Detection Annotation" .
+
+cv:Box a owl:Class ;
+    rdfs:label "Bounding Box" .
+
+############################
+# Color System
+############################
+
+cv:Color a owl:Class ;
+    rdfs:label "Color" .
+
+cv:RedColor a owl:Class ;
+    rdfs:subClassOf cv:Color ;
+    rdfs:label "Red" .
+
+cv:GreenColor a owl:Class ;
+    rdfs:subClassOf cv:Color ;
+    rdfs:label "Green" .
+
+cv:YellowColor a owl:Class ;
+    rdfs:subClassOf cv:Color ;
+    rdfs:label "Yellow" .
+
+cv:NAColor a owl:Class ;
+    rdfs:subClassOf cv:Color ;
+    rdfs:label "Unknown / Not Available Color" ;
+    rdfs:comment "Used only at object-level when color is missing or unknown." .
+
+############################
+# Actions (Ego Vehicle)
+############################
+
+cv:Action a owl:Class ;
+    rdfs:label "Driving Action" .
+
+cv:StopAction a owl:Class ;
+    rdfs:subClassOf cv:Action ;
+    rdfs:label "Stop" .
+
+cv:SlowAction a owl:Class ;
+    rdfs:subClassOf cv:Action ;
+    rdfs:label "Slow Down" .
+
+cv:GoAction a owl:Class ;
+    rdfs:subClassOf cv:Action ;
+    rdfs:label "Go" .
+
+cv:UnknownAction a owl:Class ;
+    rdfs:subClassOf cv:Action ;
+    rdfs:label "Unknown Action" .
+
+############################
+# Object Properties
+############################
+
+cv:fromDataset a owl:ObjectProperty ;
+    rdfs:domain cv:Image ;
+    rdfs:range cv:Dataset ;
+    rdfs:label "from dataset" .
+
+cv:hasAnnotation a owl:ObjectProperty ;
+    rdfs:domain cv:Image ;
+    rdfs:range cv:ObjectDetectionAnnotation ;
+    rdfs:label "has annotation" .
+
+cv:containsObject a owl:ObjectProperty ;
+    rdfs:domain cv:Image ;
+    rdfs:range cv:Object ;
+    rdfs:label "contains object" .
+
+cv:describedByAnnotation a owl:ObjectProperty ;
+    rdfs:domain cv:Object ;
+    rdfs:range cv:ObjectDetectionAnnotation ;
+    rdfs:label "object described by annotation" .
+
+cv:annotatesObject a owl:ObjectProperty ;
+    owl:inverseOf cv:describedByAnnotation ;
+    rdfs:domain cv:ObjectDetectionAnnotation ;
+    rdfs:range cv:Object ;
+    rdfs:label "annotates object" .
+
+cv:hasBox a owl:ObjectProperty ;
+    rdfs:domain cv:ObjectDetectionAnnotation ;
+    rdfs:range cv:Box ;
+    rdfs:label "has bounding box" .
+
+cv:hasColor a owl:ObjectProperty ;
+    rdfs:domain cv:TrafficLight ;
+    rdfs:range cv:Color ;
+    rdfs:label "has color" .
+
+cv:sceneTrafficLightColor a owl:ObjectProperty ;
+    rdfs:domain cv:Image ;
+    rdfs:range cv:Color ;
+    rdfs:label "scene traffic light color" ;
+    rdfs:comment "Only asserted when a governing traffic light exists in the scene." .
+
+cv:derivedFromTrafficLight a owl:ObjectProperty ;
+    rdfs:domain cv:Image ;
+    rdfs:range cv:TrafficLight ;
+    rdfs:label "derived from traffic light" .
+
+cv:action a owl:ObjectProperty ;
+    rdfs:domain cv:Vehicle ;
+    rdfs:range cv:Action ;
+    rdfs:label "driving action" .
+
+############################
+# Data Properties
+############################
+
+cv:category a owl:DatatypeProperty ;
+    rdfs:domain cv:ObjectDetectionAnnotation ;
+    rdfs:range xsd:string ;
+    rdfs:label "category label" .
+
+cv:trafficLightColor a owl:DatatypeProperty ;
+    rdfs:domain cv:ObjectDetectionAnnotation ;
+    rdfs:range xsd:string ;
+    rdfs:label "raw traffic light color (legacy)" .
+
+cv:occluded a owl:DatatypeProperty ;
+    rdfs:domain cv:ObjectDetectionAnnotation ;
+    rdfs:range xsd:boolean ;
+    rdfs:label "occluded" .
+
+cv:truncated a owl:DatatypeProperty ;
+    rdfs:domain cv:ObjectDetectionAnnotation ;
+    rdfs:range xsd:boolean ;
+    rdfs:label "truncated" .
+
+cv:x a owl:DatatypeProperty ;
+    rdfs:domain cv:Box ;
+    rdfs:range xsd:float ;
+    rdfs:label "x coordinate" .
+
+cv:y a owl:DatatypeProperty ;
+    rdfs:domain cv:Box ;
+    rdfs:range xsd:float ;
+    rdfs:label "y coordinate" .
+
+cv:width a owl:DatatypeProperty ;
+    rdfs:domain cv:Box ;
+    rdfs:range xsd:float ;
+    rdfs:label "width" .
+
+cv:height a owl:DatatypeProperty ;
+    rdfs:domain cv:Box ;
+    rdfs:range xsd:float ;
+    rdfs:label "height" .
+
+cv:filePath a owl:DatatypeProperty ;
+    rdfs:domain cv:Image ;
+    rdfs:range xsd:string ;
+    rdfs:label "local file path" .
+
+############################
+# Scene Metadata & Inference
+############################
+
+cv:inWeather a owl:DatatypeProperty ;
+    rdfs:domain cv:Image ;
+    rdfs:range xsd:string ;
+    rdfs:label "weather condition" .
+
+cv:inLight a owl:DatatypeProperty ;
+    rdfs:domain cv:Image ;
+    rdfs:range xsd:string ;
+    rdfs:label "lighting condition" .
+
+cv:scene a owl:DatatypeProperty ;
+    rdfs:domain cv:Image ;
+    rdfs:range xsd:string ;
+    rdfs:label "scene type" .
+
+cv:inferenceMethod a owl:DatatypeProperty ;
+    rdfs:domain cv:Image ;
+    rdfs:range xsd:string ;
+    rdfs:label "inference method used for scene traffic light" .
+
+cv:inferenceConfidence a owl:DatatypeProperty ;
+    rdfs:domain cv:Image ;
+    rdfs:range xsd:float ;
+    rdfs:label "confidence of scene traffic light inference" .

@@ -1,0 +1,44 @@
+data:
+  schema_path: "ontology/schema.ttl"
+  bdd_ttl: "out/bdd_sample_1000.ttl"
+  coco_ttl: "out/coco_traffic_sample_1000.ttl"
+
+query:
+  text: |
+    PREFIX cv: <http://vision.semkg.org/onto/v0.1/>
+
+    SELECT ?path ?action WHERE {
+      { SELECT ?path (cv:GoAction AS ?action) WHERE {
+          ?img cv:filePath ?path ; cv:containsObject ?vehicle .
+          ?vehicle cv:action cv:GoAction .
+        } LIMIT 100 }
+      UNION
+      { SELECT ?path (cv:StopAction AS ?action) WHERE {
+          ?img cv:filePath ?path ; cv:containsObject ?vehicle .
+          ?vehicle cv:action cv:StopAction .
+        } LIMIT 100 }
+      UNION
+      { SELECT ?path (cv:SlowAction AS ?action) WHERE {
+          ?img cv:filePath ?path ; cv:containsObject ?vehicle .
+          ?vehicle cv:action cv:SlowAction .
+        } LIMIT 100 }
+      UNION
+      { SELECT ?path (cv:UnknownAction AS ?action) WHERE {
+          ?img cv:filePath ?path ; cv:containsObject ?vehicle .
+          ?vehicle cv:action cv:UnknownAction .
+        } LIMIT 100 }
+    }
+
+training:
+  batch_size: 32
+  val_split: 0.2
+  num_epochs: 3
+  learning_rate: 1.0e-4
+  seed: 42
+
+output:
+  model_dir: "artifacts/models"
+  metrics_dir: "artifacts/metrics"
+  figures_dir: "artifacts/figures"
+  run_name: "resnet18_tryi"
+
