@@ -1,6 +1,4 @@
-# Project: From KG-to-AI in Automotive Scenario
-
-Instructions (solution) for building a vision Knowledge Graph from BDD/COCO annotations and validating with SHACL. Please adapt the paths according to your OS and files and folder structure.
+# Semantic Knowledge Graph for Autonomous Driving Perception
 
 ---
 
