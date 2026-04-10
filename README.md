@@ -1,5 +1,11 @@
 # Semantic Knowledge Graph for Autonomous Driving Perception
 
+This project builds an `RDF/OWL-based knowledge graph` for autonomous driving by integrating perception data from `BDD100K` and `COCO traffic datasets`. It transforms raw object detection annotations into structured semantic triples using Python pipelines, enabling machine-readable representation of images, objects, and scene context.
+
+The ontology models `vehicle taxonomy`, `traffic lights`, and `driving semantics`, supporting `semantic abstraction (e.g., Car → Vehicle → Object)` and reasoning with `OWL2-RL`. The graph is deployed in `GraphDB` with `SHACL validation` to ensure data consistency and quality.
+
+Using `SPARQL` queries, the system enables semantic scene retrieval, analysis, and reasoning over perception data, forming a strong foundation for GraphRAG and intelligent autonomous driving applications.
+
 ---
 
 ## Project structure
