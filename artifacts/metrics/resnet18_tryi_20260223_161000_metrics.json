@@ -1,0 +1,5 @@
+{
+  "epochs": 3,
+  "val_accuracy": 0.3939393939393939,
+  "train_loss_last_epoch": 1.9259818643331528
+}
